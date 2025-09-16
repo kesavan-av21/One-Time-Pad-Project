@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>One-Time Pad Encryption & Decryption</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 20px;
+        background-color: #f4f4f4;
+      }
+      .container {
+        max-width: 500px;
+        margin: auto;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      }
+      input,
+      textarea {
+        width: 90%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+      button {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      .output {
+        margin-top: 20px;
+        padding: 10px;
+        background: #e9ecef;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>One-Time Pad Encryption & Decryption</h2>
+
+      <h3>Encrypt Message</h3>
+      <input type="text" id="messageInput" placeholder="Enter message" />
+      <button onclick="encryptMessage()">Encrypt</button>
+
+      <div class="output">
+        <p>
+          <strong>Original Message:</strong> <span id="OriginalMessage"></span>
+        </p>
+        <p>
+          <strong>Encrypted Message:</strong> <span id="encryptedText"></span>
+        </p>
+        <p><strong>Generated Key:</strong> <span id="keyText"></span></p>
+      </div>
+
+      <h3>Decrypt Message</h3>
+      <input
+        type="text"
+        id="decryptInput"
+        placeholder="Enter encrypted message"
+      />
+      <input type="text" id="decryptKey" placeholder="Enter key" />
+      <button onclick="decryptMessage()">Decrypt</button>
+
+      <div class="output">
+        <p>
+          <strong>Decrypted Message:</strong> <span id="decryptedText"></span>
+        </p>
+      </div>
+    </div>
+
+    <script>
+      const apiUrl = "http://localhost:8080/otp"; // Backend API URL
+
+      // Encrypt Message Function
+      async function encryptMessage() {
+        const message = document.getElementById("messageInput").value;
+        if (!message) {
+          alert("Please enter a message to encrypt!");
+          return;
+        }
+
+        const response = await fetch(`${apiUrl}/encrypt`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          document.getElementById("OriginalMessage").innerText = message;
+          document.getElementById("encryptedText").innerText =
+            result.encryptedMessage;
+          document.getElementById("keyText").innerText = result.key;
+        } else {
+          alert(result.error);
+        }
+      }
+
+      // Decrypt Message Function
+      async function decryptMessage() {
+        const encryptedMessage = document.getElementById("decryptInput").value;
+        const key = document.getElementById("decryptKey").value;
+
+        if (!encryptedMessage || !key) {
+          alert("Please enter both encrypted message and key!");
+          return;
+        }
+
+        const response = await fetch(`${apiUrl}/decrypt`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ encryptedMessage, key }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          document.getElementById("decryptedText").innerText =
+            result.decryptedMessage;
+        } else {
+          alert(result.error);
+        }
+      }
+    </script>
+  </body>
+</html>
