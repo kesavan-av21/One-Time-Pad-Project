@@ -39,7 +39,7 @@ OneTimePad/
 │   │   │       └── example/
 │   │   │           └── onetimepad/
 │   │   │               ├── OneTimePadApplication.java
-│   │   │               │   └── CreateOneTimePadController.java
+│   │   │               └── CreateOneTimePadController.java
 │   │   │
 │   │   └── resources/
 │   │       ├── application.properties
